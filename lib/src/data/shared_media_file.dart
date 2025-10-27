@@ -8,6 +8,9 @@ class SharedMediaFile {
   /// Video thumbnail
   final String? thumbnail;
 
+  /// Text extracted
+  final String? text;
+
   /// Video duration in milliseconds
   final int? duration;
 
@@ -24,6 +27,7 @@ class SharedMediaFile {
   SharedMediaFile({
     required this.path,
     required this.type,
+    this.text,
     this.thumbnail,
     this.duration,
     this.mimeType,
@@ -32,6 +36,7 @@ class SharedMediaFile {
 
   SharedMediaFile.fromMap(Map<String, dynamic> json)
       : path = json['path'],
+        text = json['text'],
         thumbnail = json['thumbnail'],
         duration = json['duration'],
         type = SharedMediaType.fromValue(json['type']),
@@ -41,6 +46,7 @@ class SharedMediaFile {
   Map<String, dynamic> toMap() {
     return {
       'path': path,
+      'text': text,
       'thumbnail': thumbnail,
       'duration': duration,
       'type': type.value,
