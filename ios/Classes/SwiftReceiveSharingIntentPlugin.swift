@@ -5,7 +5,7 @@ import Photos
 public let kSchemePrefix = "ShareMedia"
 public let kUserDefaultsKey = "ShareKey"
 public let kUserDefaultsMessageKey = "ShareMessageKey"
-public let kAppGroupIdKey = "AppGroupId"
+public let kAppGroupIdKey = "group.com.mnk.vreels.dev"
 
 public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     static let kMessagesChannel = "receive_sharing_intent/messages"
@@ -49,7 +49,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     // - found the issue while developing multiple applications using this library, after "application(_:open:options:)" is called, the first app using this librabry (first app by bundle id alphabetically) is opened
     public func hasMatchingSchemePrefix(url: URL?) -> Bool {
         if let url = url, let appDomain = Bundle.main.bundleIdentifier {
-            return url.absoluteString.hasPrefix("\(kSchemePrefix)-\(appDomain)")
+            return url.absoluteString.hasPrefix("devvreels")
         }
         return false
     }
@@ -110,10 +110,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     }
     
     private func handleUrl(url: URL?, setInitialData: Bool) -> Bool {
-        let appGroupId = Bundle.main.object(forInfoDictionaryKey: kAppGroupIdKey) as? String
-        let defaultGroupId = "group.\(Bundle.main.bundleIdentifier!)"
-        let userDefaults = UserDefaults(suiteName: appGroupId ?? defaultGroupId)
-        
+        let userDefaults = UserDefaults(suiteName: "group.com.mnk.vreels.dev")
         let message = userDefaults?.string(forKey: kUserDefaultsMessageKey)
         if let json = userDefaults?.object(forKey: kUserDefaultsKey) as? Data {
             let sharedArray = decode(data: json)
@@ -122,10 +119,11 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
                         : getAbsolutePath(for: $0.path) else {
                     return nil
                 }
-                
+                NSLog("###### ios flutter media pass \($0)")
                 return SharedMediaFile(
                     path: path,
                     mimeType: $0.mimeType,
+                    text: $0.text,
                     thumbnail: getAbsolutePath(for: $0.thumbnail),
                     duration: $0.duration,
                     message: message,
@@ -206,6 +204,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
 public class SharedMediaFile: Codable {
     var path: String
     var mimeType: String?
+    var text: String?
     var thumbnail: String? // video thumbnail
     var duration: Double? // video duration in milliseconds
     var message: String? // post message
@@ -215,6 +214,7 @@ public class SharedMediaFile: Codable {
     public init(
         path: String,
         mimeType: String? = nil,
+        text: String? = nil,
         thumbnail: String? = nil,
         duration: Double? = nil,
         message: String?=nil,
@@ -225,6 +225,7 @@ public class SharedMediaFile: Codable {
             self.duration = duration
             self.message = message
             self.type = type
+            self.text = text
         }
 }
 
