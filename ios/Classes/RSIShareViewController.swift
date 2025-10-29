@@ -12,8 +12,8 @@ import Photos
 
 @available(swift, introduced: 5.0)
 open class RSIShareViewController: SLComposeServiceViewController {
-    var hostAppBundleIdentifier = ""
-    var appGroupId = ""
+    var hostAppBundleIdentifier = "com.mnk.vreels.dev"
+    var appGroupId = "group.com.mnk.vreels.dev"
     var sharedMedia: [SharedMediaFile] = []
 
     /// Override this method to return false if you don't want to redirect to host app automatically
@@ -117,8 +117,9 @@ open class RSIShareViewController: SLComposeServiceViewController {
     
     private func handleMedia(forLiteral item: String, type: SharedMediaType, index: Int, content: NSExtensionItem) {
         sharedMedia.append(SharedMediaFile(
-            path: item,
+            path: "",
             mimeType: type == .text ? "text/plain": nil,
+            text: item,
             type: type
         ))
         if index == (content.attachments?.count ?? 0) - 1 {
@@ -183,7 +184,7 @@ open class RSIShareViewController: SLComposeServiceViewController {
     
     // Save shared media and redirect to host app
     private func saveAndRedirect(message: String? = nil) {
-        let userDefaults = UserDefaults(suiteName: appGroupId)
+        let userDefaults = UserDefaults(suiteName: "group.com.mnk.vreels.dev")
         userDefaults?.set(toData(data: sharedMedia), forKey: kUserDefaultsKey)
         userDefaults?.set(message, forKey: kUserDefaultsMessageKey)
         userDefaults?.synchronize()
@@ -193,7 +194,7 @@ open class RSIShareViewController: SLComposeServiceViewController {
     private func redirectToHostApp() {
         // ids may not loaded yet so we need loadIds here too
         loadIds()
-        let url = URL(string: "\(kSchemePrefix)-\(hostAppBundleIdentifier):share")
+        let url = URL(string: "devvreels:\\share")
         var responder = self as UIResponder?
         
         if #available(iOS 18.0, *) {
