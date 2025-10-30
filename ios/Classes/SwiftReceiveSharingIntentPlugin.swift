@@ -5,7 +5,6 @@ import Photos
 public let kSchemePrefix = "ShareMedia"
 public let kUserDefaultsKey = "ShareKey"
 public let kUserDefaultsMessageKey = "ShareMessageKey"
-public let kAppGroupIdKey = "group.com.mnk.vreels.dev"
 
 public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     static let kMessagesChannel = "receive_sharing_intent/messages"
@@ -49,7 +48,17 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     // - found the issue while developing multiple applications using this library, after "application(_:open:options:)" is called, the first app using this librabry (first app by bundle id alphabetically) is opened
     public func hasMatchingSchemePrefix(url: URL?) -> Bool {
         if let url = url, let appDomain = Bundle.main.bundleIdentifier {
-            return url.absoluteString.hasPrefix("devvreels")
+            NSLog("##### appDomain \(appDomain)")
+            switch appDomain {
+                case "com.mnk.vreels.dev":
+                    return url.absoluteString.hasPrefix("devvreels")
+                case "com.mnk.vreels.preprod":
+                    return url.absoluteString.hasPrefix("prevreels")
+                case "com.mnk.vreels":
+                    return url.absoluteString.hasPrefix("vreels")
+                default:
+                    return url.absoluteString.hasPrefix("vreels")
+                }
         }
         return false
     }
@@ -110,7 +119,10 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     }
     
     private func handleUrl(url: URL?, setInitialData: Bool) -> Bool {
-        let userDefaults = UserDefaults(suiteName: "group.com.mnk.vreels.dev")
+        let defaultGroupId = "group.\(Bundle.main.bundleIdentifier!)"
+        NSLog("####### flutter groupid \(defaultGroupId)")
+        let userDefaults = UserDefaults(suiteName: defaultGroupId)
+        
         let message = userDefaults?.string(forKey: kUserDefaultsMessageKey)
         if let json = userDefaults?.object(forKey: kUserDefaultsKey) as? Data {
             let sharedArray = decode(data: json)
@@ -119,7 +131,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
                         : getAbsolutePath(for: $0.path) else {
                     return nil
                 }
-                NSLog("###### ios flutter media pass \($0)")
+                
                 return SharedMediaFile(
                     path: path,
                     mimeType: $0.mimeType,
