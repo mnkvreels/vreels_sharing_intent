@@ -12,8 +12,8 @@ import Photos
 
 @available(swift, introduced: 5.0)
 open class RSIShareViewController: SLComposeServiceViewController {
-    var hostAppBundleIdentifier = "com.mnk.vreels.dev"
-    var appGroupId = "group.com.mnk.vreels.dev"
+    var hostAppBundleIdentifier = ""
+    var appGroupId = ""
     var sharedMedia: [SharedMediaFile] = []
 
     /// Override this method to return false if you don't want to redirect to host app automatically
@@ -109,9 +109,9 @@ open class RSIShareViewController: SLComposeServiceViewController {
         
         
         // loading custom AppGroupId from Build Settings or use group.<hostAppBundleIdentifier>
-        let customAppGroupId = Bundle.main.object(forInfoDictionaryKey: kAppGroupIdKey) as? String
         
-        appGroupId = customAppGroupId ?? defaultAppGroupId
+        appGroupId = defaultAppGroupId
+        NSLog("###### load ids \(hostAppBundleIdentifier) \(appGroupId)")
     }
     
     
@@ -184,17 +184,30 @@ open class RSIShareViewController: SLComposeServiceViewController {
     
     // Save shared media and redirect to host app
     private func saveAndRedirect(message: String? = nil) {
-        let userDefaults = UserDefaults(suiteName: "group.com.mnk.vreels.dev")
+        let userDefaults = UserDefaults(suiteName: appGroupId)
         userDefaults?.set(toData(data: sharedMedia), forKey: kUserDefaultsKey)
         userDefaults?.set(message, forKey: kUserDefaultsMessageKey)
         userDefaults?.synchronize()
         redirectToHostApp()
     }
+    private func getUrlVreels() -> String {
+        switch hostAppBundleIdentifier {
+            case "com.mnk.vreels.dev":
+                return "devvreels:\\share"
+            case "com.mnk.vreels.preprod":
+                return "prevreels:\\share"
+            case "com.mnk.vreels":
+                return "vreels:\\share"
+            default:
+                return "vreels:\\share"
+            }
+    }
     
     private func redirectToHostApp() {
         // ids may not loaded yet so we need loadIds here too
         loadIds()
-        let url = URL(string: "devvreels:\\share")
+        let url = URL(string: getUrlVreels())
+        NSLog("#### launch main app \(url)")
         var responder = self as UIResponder?
         
         if #available(iOS 18.0, *) {
