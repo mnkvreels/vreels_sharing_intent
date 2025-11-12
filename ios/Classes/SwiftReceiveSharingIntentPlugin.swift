@@ -53,7 +53,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
                 case "com.mnk.vreels.dev":
                     return url.absoluteString.hasPrefix("devvreels")
                 case "com.mnk.vreels.preprod":
-                    return url.absoluteString.hasPrefix("prevreels")
+                    return url.absoluteString.hasPrefix("preprodvreels")
                 case "com.mnk.vreels":
                     return url.absoluteString.hasPrefix("vreels")
                 default:
