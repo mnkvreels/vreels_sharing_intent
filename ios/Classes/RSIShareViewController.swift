@@ -195,7 +195,7 @@ open class RSIShareViewController: SLComposeServiceViewController {
             case "com.mnk.vreels.dev":
                 return "devvreels:\\share"
             case "com.mnk.vreels.preprod":
-                return "prevreels:\\share"
+                return "preprodvreels:\\share"
             case "com.mnk.vreels":
                 return "vreels:\\share"
             default:
